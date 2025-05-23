@@ -1,8 +1,9 @@
 'use strict'
 
-const path = require('node:path')
-const Fastify = require('fastify')
-const App = require('../app.js') // Corrected path
+import path from 'node:path'
+import Fastify, { FastifyInstance } from 'fastify'
+import App from '../src/app' // Updated path to src/app.ts
+import { TPTap } from 'tap' // Import tap type for 't' parameter
 
 // Fill in this config with all the configurations
 // needed for testing the application
@@ -11,13 +12,14 @@ async function config () {
 }
 
 // Automatically build and tear down our instance
-async function build (t) {
-  const app = Fastify()
+async function build (t: TPTap) { // Added type for t
+  const app: FastifyInstance = Fastify()
 
   // fastify-plugin ensures that all decorators
   // are exposed for testing purposes, this is
   // different from the production setup
-  await app.register(App, await config()) // Corrected registration
+  // Corrected registration: App is a default export
+  await app.register(App, await config())
 
   // tear down our app instance after we are done
   t.teardown(app.close.bind(app))
@@ -25,7 +27,7 @@ async function build (t) {
   return app
 }
 
-module.exports = {
+export {
   config,
   build
 }
